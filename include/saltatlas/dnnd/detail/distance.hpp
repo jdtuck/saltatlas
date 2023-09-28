@@ -8,8 +8,10 @@
 #include <cassert>
 #include <cmath>
 #include <string_view>
+#include <armadillo>
 
 #include <saltatlas/dnnd/detail/utilities/blas.hpp>
+#include <saltatlas/dnnd/detail/utilities/functional.hpp>
 
 namespace saltatlas::dndetail::distance {
 template <typename T>
@@ -29,6 +31,63 @@ inline auto l2(const std::size_t len, const T *const f0, const T *const f1) {
     d += x * x;
   }
   return static_cast<T>(std::sqrt(d));
+}
+
+template <typename T>
+inline auto elastic(const std::size_t len, const T *const f0, const T *const f1) {
+  double alpha = 0.5;
+  
+  T tst = 0;
+  for (std::size_t i = 0; i < len; ++i) {
+    const auto x = (f0[i] - f1[i]);
+    tst += x * x;
+  }
+  T dist = 0;
+  if (tst == 0){
+    dist = 0;
+  }
+  else{
+    arma::vec q0(f0, len);
+    arma::vec q1(f1, len);
+
+    arma::vec gam0 = warp(q0, q1);
+    arma::vec time = arma::linspace(0,1,len);
+    arma::vec gam(len);
+    gam = (gam0 - gam[0]) / (gam[len-1] - gam[0]);
+    arma::vec gam_dev(len);
+    gam_dev = grad(gam, 1/(len-1));
+
+    arma::vec tmp;
+    arma::vec time_new;
+    time_new = (time[len-1]-time[0]) * gam + time[0];
+    arma::interp1(time, q1, time_new, tmp);
+
+    arma::vec qw;
+    qw = tmp * arma::sqrt(gam_dev);
+
+    arma::vec y;
+    y = arma::square(qw-q0);
+
+    arma::vec dd;
+    dd = arma::diff(time);
+    tmp = dd*(y.rows(0,len-2)+y.rows(1,len-1))/2;
+    T da = std::sqrt(sum(tmp));
+
+    arma::vec psi;
+    psi = arma::sqrt(grad(gam, 1/(len-1)));
+    double q1dotq2 = arma::trapz(time, psi);
+    if (q1dotq2 > 1){
+      q1dotq2 = 1;
+    } else if (q1dotq2 < -1){
+      q1dotq2 = -1;
+    }
+    T dp = std::acos(q1dotq2);
+
+    dist = (1-alpha) * da + alpha * dp;
+
+  }
+
+  return static_cast<T>(dist);
 }
 
 template <typename T>

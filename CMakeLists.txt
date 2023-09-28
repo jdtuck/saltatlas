@@ -54,6 +54,9 @@ include(FetchContent)
 
 option(SALTATLAS_USE_METALL "Use Metall" OFF)
 
+# Armadillo
+find_package(Armadillo REQUIRED)
+
 #
 # Boost
 #
@@ -215,10 +218,10 @@ add_library(saltatlas::saltatlas ALIAS saltatlas)
 target_compile_features(saltatlas INTERFACE cxx_std_17)
 target_include_directories(
     saltatlas INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-                        $<INSTALL_INTERFACE:include>
+    $<INSTALL_INTERFACE:include> ${ARMADILLO_INCLUDE_DIRS}
 )
 target_link_libraries(
-    saltatlas INTERFACE ${SALTATLAS_CEREAL_TARGET} ygm::ygm hnswlib::hnswlib
+  saltatlas INTERFACE ${SALTATLAS_CEREAL_TARGET} ygm::ygm hnswlib::hnswlib ${ARMADILLO_LIBRARIES}
 )
 
 #
