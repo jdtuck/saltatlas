@@ -16,8 +16,8 @@
 #include "dnnd_example_common.hpp"
 
 using id_type              = uint32_t;
-using feature_element_type = float;
-using distance_type        = float;
+using feature_element_type = double;
+using distance_type        = double;
 using dnnd_type =
     saltatlas::dnnd_pm<id_type, feature_element_type, distance_type>;
 
