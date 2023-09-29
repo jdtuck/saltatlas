@@ -131,6 +131,8 @@ enum class metric_id : uint8_t { invalid, l2, cosine, jaccard, elastic };
 inline metric_id convert_to_metric_id(const std::string_view &metric_name) {
   if (metric_name == "l2") {
     return metric_id::l2;
+  } else if (metric_name == "elastic"){
+    return metric_id::elastic;
   } else if (metric_name == "cosine") {
     return metric_id::cosine;
   } else if (metric_name == "jaccard") {
@@ -143,6 +145,8 @@ template <typename T>
 inline metric_type<T> &metric(const metric_id &id) {
   if (id == metric_id::l2) {
     return l2<T>;
+  } else if (id == metric_id::elastic) {
+    return elastic<T>;
   } else if (id == metric_id::cosine) {
     return cosine<T>;
   } else if (id == metric_id::jaccard) {
@@ -155,4 +159,4 @@ template <typename T>
 inline metric_type<T> &metric(const std::string_view metric_name) {
   return metric<T>(convert_to_metric_id(metric_name));
 }
-}  // namespace saltatlas::dndetail::distance
+}  // namespace saltatlas::dnd:detail::distance
