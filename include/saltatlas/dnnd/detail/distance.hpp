@@ -126,7 +126,7 @@ inline auto jaccard_index(const std::size_t len, const T *const f0,
            static_cast<T>(num_non_zero);
 }
 
-enum class metric_id : uint8_t { invalid, l2, cosine, jaccard };
+enum class metric_id : uint8_t { invalid, l2, cosine, jaccard, elastic };
 
 inline metric_id convert_to_metric_id(const std::string_view &metric_name) {
   if (metric_name == "l2") {
