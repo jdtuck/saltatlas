@@ -53,9 +53,9 @@ inline auto elastic(const std::size_t len, const T *const f0, const T *const f1)
     arma::vec gam0 = warp(q0, q1);
     arma::vec time = arma::linspace(0,1,len);
     arma::vec gam(len);
-    gam = (gam0 - gam[0]) / (gam[len-1] - gam[0]);
+    gam = (gam0 - gam0[0]) / (gam0[len-1] - gam0[0]);
     arma::vec gam_dev(len);
-    gam_dev = grad(gam, 1/(len-1));
+    gam_dev = grad(gam, 1.0/(len-1));
 
     arma::vec tmp;
     arma::vec time_new;
@@ -63,19 +63,22 @@ inline auto elastic(const std::size_t len, const T *const f0, const T *const f1)
     arma::interp1(time, q1, time_new, tmp);
 
     arma::vec qw;
-    qw = tmp * arma::sqrt(gam_dev);
+    qw = tmp % arma::sqrt(gam_dev);
 
     arma::vec y;
     y = arma::square(qw-q0);
 
     arma::vec dd;
     dd = arma::diff(time);
-    tmp = dd*(y.rows(0,len-2)+y.rows(1,len-1))/2;
-    T da = std::sqrt(sum(tmp));
+    tmp = dd % (y.rows(0,len-2)+y.rows(1,len-1))/2;
+    double out1 = arma::accu(tmp);
+    T da = std::sqrt(arma::accu(tmp));
 
     arma::vec psi;
-    psi = arma::sqrt(grad(gam, 1/(len-1)));
-    double q1dotq2 = arma::trapz(time, psi);
+    psi = arma::sqrt(grad(gam, 1.0/(len-1)));
+    arma::mat int_temp;
+    int_temp = arma::trapz(time, psi);
+    double q1dotq2 = int_temp[0];
     if (q1dotq2 > 1){
       q1dotq2 = 1;
     } else if (q1dotq2 < -1){

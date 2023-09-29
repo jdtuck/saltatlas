@@ -18,8 +18,8 @@ namespace saltatlas::dndetail {
     g[0] = (f[1]-f[0])/(h[1]-h[0]);
     g[n-1] = (f[n-1]-f[n-2])/(h[n-1]-h[n-2]);
 
-    h = h.rows(2,n-1) - h(0,n-3);
-    g.rows(1,n-1) = (f.rows(2,n-1)-f.rows(0,n-3))/h[0];
+    h = h.rows(2,n-1) - h.rows(0,n-3);
+    g.rows(1,n-2) = (f.rows(2,n-1)-f.rows(0,n-3))/h[0];
 
     return g;
   }
