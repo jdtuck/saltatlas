@@ -6,6 +6,7 @@
 #include <armadillo>
 
 #include <saltatlas/dnnd/detail/utilities/DP.hpp>
+#include <saltatlas/dnnd/detail/utilities/rbfgs.hpp>
 
 namespace saltatlas::dndetail {
 
@@ -22,6 +23,16 @@ namespace saltatlas::dndetail {
     g.rows(1,n-2) = (f.rows(2,n-1)-f.rows(0,n-3))/h[0];
 
     return g;
+  }
+
+  arma::vec warp_r(arma::vec q1, arma::vec q2){
+    int M = q1.n_rows;
+    arma::vec time = arma::linspace(0,1,M);
+    arma::vec gam(M, arma::fill::zeros);
+
+    gam = rlbfgs_optim(q1, q2, time);
+
+    return gam;
   }
 
   arma::vec warp(arma::vec q1, arma::vec q2){

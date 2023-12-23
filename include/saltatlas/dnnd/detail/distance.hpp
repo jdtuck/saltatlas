@@ -50,7 +50,7 @@ inline auto elastic(const std::size_t len, const T *const f0, const T *const f1)
     arma::vec q0((double *) f0, len, false);
     arma::vec q1((double *) f1, len);
 
-    arma::vec gam0 = warp(q0, q1);
+    arma::vec gam0 = warp_r(q0, q1);
     arma::vec time = arma::linspace(0,1,len);
     arma::vec gam(len);
     gam = (gam0 - gam0[0]) / (gam0[len-1] - gam0[0]);
